@@ -4,7 +4,7 @@ import "time"
 
 // Сейчас для простоты опущены коллбэки.
 // О них поговорим позже, линейности происходящего они не отменяют.
-func processAuthorization3(auth AuthParams) {
+func processAuthorizationJobHandler(auth AuthParams) {
 	// Сходить в PMS за customer id
 	customerID, _ := pms.GetCustomerID(auth.CardID) // retries внутри с помощью `for {  if err != nil time.Sleep }`
 
@@ -33,6 +33,10 @@ func processAuthorization3(auth AuthParams) {
 
 	// Отправить результат в GPM
 	gpm.Notify(status)
+}
+
+func handleRequest(params AuthParams) {
+	jobs.Enqueue("process_authorization", params)
 }
 
 

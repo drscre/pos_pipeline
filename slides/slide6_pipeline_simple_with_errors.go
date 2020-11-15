@@ -6,7 +6,7 @@ import (
 
 func authorizationPipeline2() {
 	// Сходить в PMS за customer id
-	pipeline.Do(a(func(auth *Authorization) error {
+	pipeline.Step(a(func(auth *Authorization) error {
 
 		customerID, err := pms.GetCustomerID(auth.CardID)
 		if err != nil {

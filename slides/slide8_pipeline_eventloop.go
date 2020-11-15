@@ -38,3 +38,9 @@ func authorizationPipeline4() {
 // События реализованы в виде постановки джобы на выполнение пайплайна с параметром (где событие в параметре)
 // Когда джоба запускается то смотрим - ждёт ли на текущем шаге пайплайн этот ивент (в будущем можно делать что-то вроде pipeline.Listen)
 // TimerTick - это по сути тоже событие, то есть джоба, которая просто дёрнет пайплайн через указанный интервал.
+
+
+func handleCallback(txID int, txStatus string) {
+	// check if authorization with id exists
+	pipeline.SendEvent(txID, PaymentStatusEvent{Status: txStatus}) // jobs.Enqueue("pipeline", id, event)
+}

@@ -37,9 +37,9 @@ import (
 // Can have a delayed launch.
 
 
-func authorizationPipeline() []pipeline.Step {
+func authorizationPipeline() []pipeline.IStep {
 	// Retrieve customer id from PMS
-	pipeline.Do(a(func(auth *Authorization) error {
+	pipeline.Step(a(func(auth *Authorization) error {
 
 		customerID, err := pmsAPI.GetCustomerID(auth.CardID)
 		if err != nil {
@@ -51,7 +51,7 @@ func authorizationPipeline() []pipeline.Step {
 	}))
 
 	// Create authorization
-	pipeline.Do(a(func(auth *Authorization) error {
+	pipeline.Step(a(func(auth *Authorization) error {
 
 		status, err := zoozAPI.CreateAuthorization(auth)
 		if err != nil {
@@ -66,7 +66,7 @@ func authorizationPipeline() []pipeline.Step {
 	isPending := i(func (auth Authorization) bool {  return auth.Status == "pending"  })
 	pipeline.While(isPending,
 		pipeline.Sleep(1 * time.Minute),
-		pipeline.Do(a(func(auth *Authorization) error {
+		pipeline.Step(a(func(auth *Authorization) error {
 			status, _ := zoozAPI.GetAuthorization(auth.ID)
 			auth.Status = status
 			return nil

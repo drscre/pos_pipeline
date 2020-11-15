@@ -8,7 +8,7 @@ import (
 
 // Declaration of pipeline (pipeline type)
 type Pipeline struct {
-	steps       []Step
+	steps       []IStep
 	retryPolicy interface{} // default retry policy for steps
 
 	storage stateStorage
@@ -24,37 +24,42 @@ type State struct {
 	Error             string // Non-empty if pipeline was terminated with non-recoverable error
 }
 
-type Step interface {
+type IStep interface {
 	name() string
 	isStep()
 }
 
-type DoStep struct {
+type SimpleStep struct {
+	n string
 	h     func(data interface{}) (modifiedData interface{}, err error)
 	delay time.Duration
 }
 
-func (DoStep) name() string { return "" }
-func (DoStep) isStep()      {}
+func (s *SimpleStep) Name(name string) *SimpleStep {
+	s.n = name
+	return s
+}
+func (s SimpleStep) name() string { return s.n }
+func (SimpleStep) isStep()      {}
 
-func (s *DoStep) Delayed(delay time.Duration) *DoStep {
+func (s *SimpleStep) Delayed(delay time.Duration) *SimpleStep {
 	s.delay = delay
 	return s
 }
 
-func (s *DoStep) RetryPolicy() *DoStep {
+func (s *SimpleStep) RetryPolicy() *SimpleStep {
 	return s
 }
 
-func Do(h func(data interface{}) (modifiedData interface{}, err error)) *DoStep {
-	return &DoStep{
+func Step(h func(data interface{}) (modifiedData interface{}, err error)) *SimpleStep {
+	return &SimpleStep{
 		h: h,
 	}
 }
 
 // cond is not supposed to have side-effects (while technically it can)
 // @TODO: should work with nested ifs
-func If(cond func(data interface{}) bool, step Step, more ...Step) *IfStep {
+func If(cond func(data interface{}) bool, step IStep, more ...IStep) *IfStep {
 	return &IfStep{}
 }
 
@@ -64,7 +69,7 @@ type IfStep struct {
 func (IfStep) name() string { return "" }
 func (IfStep) isStep()      {}
 
-func While(cond func(data interface{}) bool, step Step, more ...Step) *WhileStep {
+func While(cond func(data interface{}) bool, step IStep, more ...IStep) *WhileStep {
 	return &WhileStep{}
 }
 
@@ -179,7 +184,7 @@ func (p Pipeline) Run(ctx context.Context, id string) error {
 	}
 }
 
-func (p Pipeline) nextStep(lastCompletedStep string) Step {
+func (p Pipeline) nextStep(lastCompletedStep string) IStep {
 	if lastCompletedStep == "" {
 		return p.steps[0]
 	}

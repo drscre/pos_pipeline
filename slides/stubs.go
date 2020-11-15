@@ -35,6 +35,10 @@ var gpm struct {
 	Notify func(status string)
 }
 
+var jobs struct {
+	Enqueue func(jobName string, params interface{})
+}
+
 func a(h func(auth *Authorization) error) func(data interface{}) (modifiedData interface{}, err error) {
 	return func(data interface{}) (modifiedData interface{}, err error) {
 		err = h(data.(*Authorization))
