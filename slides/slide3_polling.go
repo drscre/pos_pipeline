@@ -35,10 +35,6 @@ func processAuthorizationJobHandler(auth AuthParams) {
 	gpm.Notify(status)
 }
 
-func handleRequest(params AuthParams) {
-	jobs.Enqueue("process_authorization", params)
-}
-
 
 
 

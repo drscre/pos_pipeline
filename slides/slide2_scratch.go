@@ -2,9 +2,12 @@ package slides
 
 
 
+// обработать запрос от GPM
+func handleRequest(params AuthParams) {
+	jobs.Enqueue("process_authorization", params)
+}
 
-
-func processAuthorization2(auth AuthParams) {
+func processAuthorizationJobHandle(auth AuthParams) {
 	// Сходить в PMS за customer id
 
 	// Создать payment в Zooz
