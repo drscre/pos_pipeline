@@ -1,5 +1,9 @@
 package slides
 
+
+
+
+
 func processAuthorization2(auth AuthParams) {
 	// Сходить в PMS за customer id
 

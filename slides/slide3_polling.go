@@ -16,7 +16,7 @@ func processAuthorization3(auth AuthParams) {
 		paymentStatus, _ = zooz.GetPayment(paymentID)
 	}
 
-	// Сходить в PMS за токеном карты (offtopic: чё было вместе с customerID сразу не получить то)
+	// Сходить в PMS за токеном карты (offtopic: почему сразу вместе с customerID не получить)
 	cardToken, _ := pms.GetCardToken(auth.CardID)
 
 	// Создать авторизацию в Zooz
@@ -34,6 +34,31 @@ func processAuthorization3(auth AuthParams) {
 	// Отправить результат в GPM
 	gpm.Notify(status)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 

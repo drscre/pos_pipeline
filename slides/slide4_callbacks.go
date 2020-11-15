@@ -9,7 +9,7 @@ func processAuthorization4(auth AuthParams, callback chan string) {
 	for paymentStatus == "pending" {
 		select {
 		case paymentStatus = <-callback: // в коллбэках только финальный статус для простоты
-		case <-time.After(1 * time.Hour): // polling
+		case <-time.After(10 * time.Minute):
 			paymentStatus, _ = zooz.GetPayment(paymentID)
 		}
 	}
