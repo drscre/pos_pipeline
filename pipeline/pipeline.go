@@ -95,6 +95,35 @@ func Retry(err error) error {
 	return err
 }
 
+type EventLoopStep struct {
+}
+
+func (EventLoopStep) name() string { return "" }
+func (EventLoopStep) isStep()      {}
+
+type EventLoopListener struct{}
+
+func EventLoop(cond func(data interface{}) bool, eventListeners ...*EventLoopListener) *EventLoopStep {
+	return &EventLoopStep{}
+}
+
+func OnEvent(func(data interface{}, event interface{}) (modifiedData interface{}, err error)) *EventLoopListener {
+	return &EventLoopListener{}
+}
+
+func OnTimerTick(interval time.Duration, cb func(data interface{}) (modifiedData interface{}, err error)) *EventLoopListener {
+	return &EventLoopListener{}
+}
+
+func ErrorHandler(h func(data interface{}, pipelineErr error) (modifiedData interface{}, err error)) *ErrorHandlerStep {
+	return &ErrorHandlerStep{}
+}
+
+type ErrorHandlerStep struct{}
+
+func (ErrorHandlerStep) name() string { return "" }
+func (ErrorHandlerStep) isStep()      {}
+
 // Simple step. Proceed to next step if completes without error.
 // Retry (with updating data!) on error according to step retry policy.
 func (p *Pipeline) Step(name string, cb func(data interface{}) (modifiedData interface{}, err error)) {
